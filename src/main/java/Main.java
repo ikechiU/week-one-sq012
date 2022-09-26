@@ -1,19 +1,17 @@
-import customer.Customer;
-import staff.Staff;
-import staff.cashier.Cashier;
-import staff.cashier.CashierInterface;
-import staff.manager.Manager;
-import store.Store;
-import store.StoreDB;
-import store.product.Product;
-import store.product.ProductsDB;
+import model.Customer;
+import model.Staff;
+import model.Cashier;
+import model.Manager;
+import model.Store;
+import service.impl.CashierServiceImpl;
+import service.impl.CustomerServiceImpl;
+import service.impl.ManagerServiceImpl;
+import service.impl.StoreDBImpl;
 
-import java.util.List;
+import java.util.spi.CalendarDataProvider;
 
 public class Main {
     public static void main(String[] args) {
-        Store storeProducts = new StoreDB().getStoreProducts();
-
         Manager manager = new Manager("Michael", "Male", 32, 1);
         Staff cashier = new Cashier("Doris", "Female", 25, 2); //Polymorphism
         Cashier cashier2 = new Cashier("Smith", "Male", 28, 10);
@@ -22,29 +20,45 @@ public class Main {
         Customer customer3 = new Customer("Agatha", "Female", 30);
         Customer customer4 = new Customer("Herschel", "Male", 50);
 
-        manager.hireCashier((Cashier) cashier); //Casting
-        System.out.println("");
+        ManagerServiceImpl managerService = new ManagerServiceImpl();
+        CashierServiceImpl cashierService = new CashierServiceImpl();
+        CustomerServiceImpl customerService = new CustomerServiceImpl();
+        StoreDBImpl storeDB = new StoreDBImpl();
 
-        customer.buy("RICE");
+        Store storeProducts = storeDB.getStoreProducts();
+
+
+
+        String cashierHireResult = managerService.hireCashier((Cashier) cashier); //Casting
+        System.out.println(cashierHireResult + "\n");
+
+        String customerBuyResult = customerService.buy(customer, "RICE");
+        System.out.println(customerBuyResult + "\n");
+
         ((Cashier) cashier).setCustomer(customer);
-        ((Cashier) cashier).sell(storeProducts, customer.getProductName());
+        String cashierSellResult = cashierService.sell((Cashier) cashier, storeProducts, customer.getProductName());
+        System.out.println(cashierSellResult + "\n");
 
-        System.out.println("");
+        String customer2BuyResult = customerService.buy(customer2, "beankS");
+        System.out.println(customer2BuyResult + "\n");
 
-        customer2.buy("beankS");
         ((Cashier) cashier).setCustomer(customer2);
-        ((Cashier) cashier).sell(storeProducts, customer2.getProductName());
+        String cashier2SellResult = cashierService.sell((Cashier) cashier, storeProducts, customer2.getProductName());
+        System.out.println(cashier2SellResult + "\n");
 
-        System.out.println("");
+        String customer3BuyResult = customerService.buy(customer3, "RICE", 2022);
+        System.out.println(customer3BuyResult + "\n");
 
-        customer3.buy("rIcE", 2022);
         cashier2.setCustomer(customer3);
-        cashier2.sell(storeProducts, customer3.getProductName());
+        String cashier3SellResult = cashierService.sell(cashier2, storeProducts, customer3.getProductName());
+        System.out.println(cashier3SellResult + "\n");
 
-        System.out.println("");
+        String customer4BuyResult = customerService.buy(customer4, "bEaNs", 2025);
+        System.out.println(customer4BuyResult + "\n");
 
-        customer4.buy("bEaNs", 2025);
         cashier2.setCustomer(customer4);
-        cashier2.sell(storeProducts, customer4.getProductName());
+        String cashier4SellResult = cashierService.sell(cashier2, storeProducts, customer4.getProductName());
+        System.out.println(cashier4SellResult + "\n");
+
     }
 }
